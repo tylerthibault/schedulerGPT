@@ -1,10 +1,16 @@
 # schedulerGPT — product plan and decision log
 
-**Status:** Foundational implementation committed; unsupervised ChatGPT integration is **not** implemented or approved. Updated 2026-11-04.
+**Status:** NOT READY FOR THE USER'S INTENDED USE. Foundation built; unattended execution is a hard requirement and is not implemented. Updated 2026-11-04.
 
 ## Vision
 
 A homelab-hosted local web application that turns a large goal into recurring ChatGPT work sessions. It remembers project objectives, plans, progress, outputs, conversation links, and a schedule. The user's preference is **regular ChatGPT chat**, without Codex, Work, or separately billed API usage.
+
+## Non-negotiable accepted requirements
+
+- **Unattended execution.** Once configured, scheduled sessions must actually run while the user is sleeping, working, or offline; they must not require a person to copy/paste a prompt or response at every run.
+- The user explicitly rejected the manual-handoff workflow as the delivered solution. This is a blocker, not polish.
+- A scheduled trigger is not a completed ChatGPT session. Do not count a prepared prompt as execution or progress.
 
 ## Approved from conversation
 
@@ -24,7 +30,7 @@ A homelab-hosted local web application that turns a large goal into recurring Ch
 
 These choices implement the *foundation*; they can be replaced with Next.js/SQLite later without changing the product vision.
 
-## Current working MVP — manual handoff
+## Existing implementation — developer prototype only (REJECTED as the intended MVP)
 
 - Authenticated UI for project creation, editing, enabling/pausing.
 - Local, automatic schedule trigger creates a **prepared prompt**; it **does not send it to ChatGPT**.
@@ -33,6 +39,12 @@ These choices implement the *foundation*; they can be replaced with Next.js/SQLi
 - The prompt includes current objective, plan, and progress to restore context in any chat.
 - Project records, prompts and outputs survive container restarts if /data is persistent.
 - A pending prepared prompt blocks other scheduled prompts for that project until completed or dismissed.
+
+## Automation architecture proposal — NOT YET APPROVED
+
+A supported possibility that preserves the ChatGPT consumer subscription is to create a **native ChatGPT Scheduled Task** once per project, configured in the ChatGPT interface, and keep the project source of truth in a GitHub repository accessible to the task through a connected GitHub app. Subsequent native scheduled runs can execute without the user's Mac or homelab being awake. However, no supported public integration lets this local web app create or programmatically submit messages to arbitrary consumer chats. Verify whether native tasks can read/write the planned GitHub files without per-run approval before presenting this as fully unattended. The Coolify dashboard would be a separate project-state view, not the scheduler of record, unless a supported integration is later found.
+
+See [automation architecture and release gates](AUTOMATION-ARCHITECTURE.md).
 
 ## Explicitly not implemented / blocked
 
@@ -56,7 +68,14 @@ ChatGPT does not expose a supported external messaging API for arbitrary consume
 - [x] Unit tests for scheduling and persistence.
 - [ ] Deploy and test on the real Coolify environment.
 
-### M1 — Usable manual workflow — requires hands-on validation
+### M1 — Unattended execution feasibility GATE (blocks release)
+- [ ] Prove a native ChatGPT Scheduled Task can run a meaningful project step on its own.
+- [ ] Prove a task can read an external versioned plan and save a durable progress update without per-run user interaction, using the supported GitHub connector and its authorized permissions.
+- [ ] Prove a subsequent run resumes from saved progress instead of replaying the same task.
+- [ ] Document any usage caps, permission approvals, failures, and chat continuity limitations.
+- [ ] Decide whether this approach meets the user's specific-chat and successor-chat requirements; if not, do not claim the product is complete.
+
+### M2 — Manual workflow for development only — optional
 - [ ] Run a 7-day real project with manual ChatGPT handoff.
 - [ ] Add export/backup and restore UI (current files can be backed up at the volume level).
 - [ ] Add notifications for prepared handoffs.
@@ -65,14 +84,14 @@ ChatGPT does not expose a supported external messaging API for arbitrary consume
 - [ ] Implement structured task checklist parsing and separate milestone state.
 - [ ] Add explicit chat rollover wizard (manual new conversation URL + context pack).
 
-### M2 — Direct ChatGPT integration feasibility gate — unresolved
+### M3 — Direct ChatGPT integration feasibility gate — unresolved
 - [ ] Identify a supported, terms-compliant method for injecting a prompt into an existing ChatGPT chat.
 - [ ] Identify a supported way to receive completion data and save plans/progress.
 - [ ] Determine whether conversation rollover can be detected and performed compliantly.
 - [ ] If no supported path exists, keep manual handoff, use ChatGPT native Scheduled tasks, or reconsider optional OpenAI API mode **only with user approval**.
 - [ ] Do not describe a browser-control experiment as production-ready until verified.
 
-### M3 — Optional enhancements
+### M4 — Optional enhancements
 - [ ] Full project task board, dependency tracking, priority and deadlines.
 - [ ] Plan versioning / rollback and diff review.
 - [ ] Per-project notifications, approvals, execution windows and quiet hours.
