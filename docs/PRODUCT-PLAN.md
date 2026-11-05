@@ -56,7 +56,7 @@ See [automation architecture and release gates](AUTOMATION-ARCHITECTURE.md).
 
 ChatGPT does not expose a supported external messaging API for arbitrary consumer-chat conversations. OpenAI's Terms of Use (effective January 1, 2026) prohibit automatically/programmatically extracting data or Output. Do not build scraping-based auto-capture or store ChatGPT cookies/passwords in this application. Reference: https://openai.com/policies/terms-of-use/ .
 
-## Milestones
+## Mandatory release criteria\n\nA release claiming to fulfill the user’s original request MUST autonomously continue scheduled work in regular ChatGPT, save updated progress, and survive changing conversations without repeated user copy/paste. See AUTONOMY-ARCHITECTURE.md for the feasibility gate.\n\n## Milestones
 
 ### M0 — Infrastructure / project state — complete in code
 - [x] Initialize repository.
