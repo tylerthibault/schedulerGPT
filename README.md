@@ -1,6 +1,6 @@
 # schedulerGPT
 
-A self-hosted project scheduler and continuity workspace for long-running ChatGPT projects.
+A self-hosted project scheduler and continuity workspace for long-running ChatGPT projects.\n\n> **Release status: AUTOMATION NOT YET IMPLEMENTED.** The goal is unattended progress in regular ChatGPT while the user is away. The current interface is a manual-handoff prototype and **does not satisfy that requirement**. Do not deploy it expecting it to send ChatGPT prompts autonomously. See [Unattended execution architecture](docs/AUTONOMY-ARCHITECTURE.md).
 
 > **PRODUCT GATE — NOT YET FIT FOR UNATTENDED USE:** The user's required outcome is that ChatGPT works **automatically while they are away or asleep**, without copying or pasting anything on each run. The current app **does not do that**. This repository is a foundation/prototype, **not** a finished solution to the request. Do not deploy it expecting autonomous ChatGPT execution. See [automation architecture and constraints](docs/AUTOMATION-ARCHITECTURE.md).
 
@@ -48,7 +48,7 @@ The server listens at `http://localhost:3000` and stores data in `./data` by def
 ## Documentation
 
 - [Automation feasibility, supported alternatives, and release gates](docs/AUTOMATION-ARCHITECTURE.md)
-- [Project vision, approved scope and road map](docs/PRODUCT-PLAN.md)
+- [Unattended execution requirements and integration feasibility](docs/AUTONOMY-ARCHITECTURE.md)\n- [Project vision, approved scope and road map](docs/PRODUCT-PLAN.md)
 - [Coolify setup and operating notes](docs/COOLIFY.md)
 
 This repository does not contain ChatGPT login credentials, session cookies, API keys, or a browser scraping mechanism.
