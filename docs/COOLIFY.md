@@ -1,4 +1,6 @@
-# Coolify deployment
+# Coolify deployment — infrastructure preview only
+
+**IMPORTANT:** This container does **not** run ChatGPT sessions unattended. The user rejected any per-run copy/paste workflow. Deploying it now is suitable only for testing the local dashboard and persistence; it is **not** the requested autonomous scheduler. See [automation architecture](AUTOMATION-ARCHITECTURE.md).
 
 Use the GitHub repo `tylerthibault/schedulerGPT` and select **Dockerfile** as the build pack. The repository already contains the Dockerfile; no Docker Compose is required in Coolify.
 
