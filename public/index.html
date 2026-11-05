@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101623">
+  <title>schedulerGPT — Project Workspace</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand"><div class="brand-icon">S</div><div>scheduler<span>GPT</span><small>PROJECT WORKSPACE</small></div></div>
+      <div class="side-header"><span>PROJECTS</span><button class="icon-button" id="new-project-top" aria-label="New project" title="New project">+</button></div>
+      <nav id="project-list" aria-label="Projects"></nav>
+      <div class="side-foot"><div class="manual-dot"></div> Manual handoff mode<div class="side-small">ChatGPT auto-send is not enabled.</div></div>
+    </aside>
+    <main class="main">
+      <header class="topbar">
+        <div><div class="eyebrow">LOCAL TASK ORCHESTRATION</div><h1>Project dashboard</h1></div>
+        <div class="top-actions"><span class="environment">LOCAL / SELF HOSTED</span><button class="button secondary" id="refresh-button">Refresh</button></div>
+      </header>
+
+      <div id="message" role="status" aria-live="polite"></div>
+
+      <section id="empty-state" class="empty-state">
+        <div class="empty-icon">✦</div>
+        <h2>Turn big projects into steady progress.</h2>
+        <p>Create a project, set a recurring schedule, and keep the working plan, progress, and outputs together—even across ChatGPT conversations.</p>
+        <button class="button primary" id="new-project-empty">Create your first project</button>
+        <div class="notice"><strong>How this version works:</strong> scheduled jobs prepare prompts locally. You open your regular ChatGPT chat and paste the prompt, then save the result here. Automatic message submission, output capture, and chat rollover are not implemented.</div>
+      </section>
+
+      <section id="workspace" hidden>
+        <div class="project-banner">
+          <div class="project-banner-text">
+            <div class="eyebrow">CURRENT PROJECT</div>
+            <h2 id="project-title"></h2>
+            <p id="project-objective"></p>
+          </div>
+          <div class="project-banner-actions">
+            <span id="project-status" class="state-label"></span>
+            <button class="button secondary" id="toggle-project"></button>
+            <button class="button primary" id="run-now">Prepare prompt</button>
+          </div>
+        </div>
+        <div class="metric-grid">
+          <div class="metric"><div class="metric-label">SCHEDULE</div><div class="metric-value small" id="project-schedule"></div></div>
+          <div class="metric"><div class="metric-label">PREPARED HANDOFF</div><div class="metric-value" id="metric-pending"></div></div>
+          <div class="metric"><div class="metric-label">COMPLETED SESSIONS</div><div class="metric-value" id="metric-completed"></div></div>
+        </div>
+        <div id="pending-banner" class="pending-banner" hidden><div><strong>A prompt is ready</strong><div class="muted">Copy it into your ChatGPT conversation, then return to record the response.</div></div><button class="button primary" id="open-pending">View prompt</button></div>
+        <div class="content-grid">
+          <section class="panel editor-panel">
+            <div class="tabs" role="tablist" aria-label="Project details">
+              <button class="tab active" data-tab="plan" role="tab" aria-selected="true">Master plan</button>
+              <button class="tab" data-tab="progress" role="tab" aria-selected="false">Progress</button>
+              <button class="tab" data-tab="history" role="tab" aria-selected="false">Session history</button>
+              <button class="tab" data-tab="settings" role="tab" aria-selected="false">Settings</button>
+            </div>
+            <div id="tab-plan" class="tab-body">
+              <div class="panel-heading"><div><h3>plan.md</h3><p>The project's source-of-truth checklist and milestones.</p></div><button class="button primary small-button" id="save-plan">Save plan</button></div>
+              <textarea class="doc-editor" id="plan-editor" spellcheck="false" aria-label="Master plan Markdown"></textarea>
+            </div>
+            <div id="tab-progress" class="tab-body" hidden>
+              <div class="panel-heading"><div><h3>progress.md</h3><p>Session notes, findings, and where to pick up.</p></div><button class="button primary small-button" id="save-progress">Save progress</button></div>
+              <textarea class="doc-editor" id="progress-editor" spellcheck="false" aria-label="Progress Markdown"></textarea>
+            </div>
+            <div id="tab-history" class="tab-body" hidden><div class="panel-heading"><div><h3>Sessions</h3><p>Prepared, completed, and dismissed handoffs.</p></div></div><div id="history-list"></div></div>
+            <div id="tab-settings" class="tab-body" hidden>
+              <div class="panel-heading"><div><h3>Project settings</h3><p>Update the next run, project objective, and target conversation.</p></div></div>
+              <form id="settings-form" class="form-stack">
+                <label>Project name<input id="settings-name" required maxlength="120"></label>
+                <label>Objective<textarea id="settings-objective" required rows="4" maxlength="10000"></textarea></label>
+                <label>ChatGPT conversation URL (optional)<input id="settings-chat" type="url" placeholder="https://chatgpt.com/c/..."></label>
+                <label>Timezone<input id="settings-timezone" required placeholder="America/Los_Angeles"></label>
+                <div class="form-row"><label>Frequency<select id="settings-kind"><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="interval">Interval</option></select></label>
+                <label id="settings-time-wrap">Run time<input id="settings-time" type="time" value="08:00"></label>
+                <label id="settings-interval-wrap" hidden>Every (minutes)<input id="settings-minutes" type="number" min="15" max="10080" value="60"></label></div>
+                <fieldset id="settings-days-wrap" hidden><legend>Weekdays</legend><div class="day-picker" id="settings-days"></div></fieldset>
+                <button class="button primary" type="submit">Save settings</button>
+              </form>
+            </div>
+          </section>
+          <aside class="right-rail">
+            <div class="panel guide-panel">
+              <div class="rail-eyebrow">SESSION FLOW</div>
+              <h3>Keep momentum.</h3>
+              <div class="step"><div class="step-icon">1</div><div><strong>Prepare</strong><p>Scheduler creates your next contextual prompt.</p></div></div>
+              <div class="step"><div class="step-icon">2</div><div><strong>Continue in ChatGPT</strong><p>Open your chat and send the copied prompt.</p></div></div>
+              <div class="step"><div class="step-icon">3</div><div><strong>Save the results</strong><p>Paste your response, update the plan if needed, and mark the session complete.</p></div></div>
+            </div>
+            <div class="panel rail-panel"><div class="rail-eyebrow">CHAT LINK</div><p id="chat-link-label">No conversation linked yet.</p><a id="chat-link" href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer" class="button secondary full-width">Open ChatGPT ↗</a><p class="muted">If a conversation becomes too long, open a new chat and update the URL in Settings. Your local files preserve the working context.</p></div>
+          </aside>
+        </div>
+      </section>
+      <footer>schedulerGPT <span>•</span> Self-hosted workspace <span>•</span> No OpenAI API key required</footer>
+    </main>
+  </div>
+
+  <dialog id="create-dialog" class="modal">
+    <form id="create-form" class="modal-content">
+      <div class="modal-head"><div><div class="eyebrow">NEW PROJECT</div><h2>Create a long-running project</h2></div><button type="button" class="close-button" data-close="create-dialog" aria-label="Close">×</button></div>
+      <label>Project name<input name="name" required maxlength="120" placeholder="30-Day Content Strategy"></label>
+      <label>Big-picture objective<textarea name="objective" required maxlength="10000" rows="4" placeholder="What should ChatGPT accomplish over multiple sessions?"></textarea></label>
+      <label>Existing ChatGPT conversation (optional)<input name="chatUrl" type="url" placeholder="https://chatgpt.com/c/..."></label>
+      <div class="form-row"><label>Schedule<select id="create-kind" name="kind"><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="interval">Interval</option></select></label>
+        <label id="create-time-wrap">Time<input type="time" name="time" value="08:00"></label>
+        <label id="create-interval-wrap" hidden>Minutes<input type="number" name="minutes" min="15" max="10080" value="60"></label>
+      </div>
+      <fieldset id="create-days-wrap" hidden><legend>Weekdays</legend><div class="day-picker" id="create-days"></div></fieldset>
+      <label>Timezone<input id="create-timezone" name="timezone" required value="America/Los_Angeles"></label>
+      <div class="modal-actions"><button type="button" class="button secondary" data-close="create-dialog">Cancel</button><button class="button primary" type="submit">Create project</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="run-dialog" class="modal wide-modal">
+    <div class="modal-content">
+      <div class="modal-head"><div><div class="eyebrow">MANUAL CHATGPT HANDOFF</div><h2 id="run-title">Prepared prompt</h2><p id="run-detail" class="muted"></p></div><button type="button" class="close-button" data-close="run-dialog" aria-label="Close">×</button></div>
+      <label>Prepared ChatGPT prompt<textarea id="run-prompt" class="run-text" readonly spellcheck="false"></textarea></label>
+      <div class="modal-actions split"><div><button class="button secondary" id="copy-prompt">Copy prompt</button><a id="run-chat" class="button secondary" target="_blank" rel="noopener noreferrer" href="https://chatgpt.com/">Open ChatGPT ↗</a></div><button class="button secondary" id="dismiss-run">Dismiss handoff</button></div>
+      <div id="run-completion"><div class="separator"></div><label>Paste the completed ChatGPT response<textarea id="run-result" rows="6" placeholder="Paste ChatGPT's finished response here. This is saved locally as a session output and appended to progress.md."></textarea></label><div class="modal-actions"><button class="button primary" id="complete-run">Save response &amp; complete session</button></div></div>
+    </div>
+  </dialog>
+</body>
+</html>
