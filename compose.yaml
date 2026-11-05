@@ -1,0 +1,17 @@
+services:
+  schedulergpt:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      PORT: "3000"
+      DATA_DIR: /data
+      TZ: America/Los_Angeles
+      APP_USER: ${APP_USER:-admin}
+      APP_PASSWORD: ${APP_PASSWORD:?Set APP_PASSWORD in your environment or an .env file}
+    volumes:
+      - schedulergpt-data:/data
+
+volumes:
+  schedulergpt-data:

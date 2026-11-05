@@ -1,0 +1,13 @@
+{
+  "name": "schedulergpt",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Self-hosted scheduling and continuity workspace for long-running ChatGPT projects",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "start": "node src/server.mjs",
+    "dev": "node --watch src/server.mjs",
+    "test": "node --test"
+  }
+}
